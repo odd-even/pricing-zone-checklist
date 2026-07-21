@@ -197,6 +197,14 @@
   .zone-label { display: block; font-size: clamp(17px, 3.4vw, 30px); font-weight: 800; color: var(--text); line-height: 1; letter-spacing: -0.5px; }
   .zone-region { display: block; font-size: clamp(7px, 1.1vw, 9px); color: var(--text-secondary); margin-top: 4px; letter-spacing: 0.5px; }
   .zone-label.usa, .zone-label.canada { color: var(--text); }
+  .card { position: relative; }
+  .region-divider {
+    position: absolute;
+    width: 2px;
+    border-radius: 999px;
+    background: var(--separator);
+    pointer-events: none;
+  }
 
   td.check-cell { text-align: center; vertical-align: middle; }
 
@@ -537,9 +545,12 @@
   taskHead.textContent = "Changes";
   zoneHeaders.appendChild(taskHead);
 
+  var prevRegion = null;
   ZONES.forEach(function (zone) {
     var th = document.createElement("th");
     th.className = "zone-head";
+    if (prevRegion && zone.region !== prevRegion) th.className += " region-start";
+    prevRegion = zone.region;
     var zoneWord = document.createElement("span");
     zoneWord.className = "zone-word";
     zoneWord.textContent = "ZONE";
@@ -815,7 +826,28 @@
     overallBar.style.backgroundSize = pct > 0 ? (10000 / pct) + "% 100%" : "100% 100%";
     overallCount.textContent = totalDone + " of " + total;
     if (typeof updateRestoreButton === "function") updateRestoreButton();
+    positionRegionDivider();
   }
+
+  var regionDivider = document.createElement("div");
+  regionDivider.className = "region-divider";
+  document.querySelector(".card").appendChild(regionDivider);
+
+  function positionRegionDivider() {
+    var firstCa = zoneHeaders.querySelector("th.region-start");
+    if (!firstCa) { regionDivider.style.display = "none"; return; }
+    var card = document.querySelector(".card");
+    var cardRect = card.getBoundingClientRect();
+    var thRect = firstCa.getBoundingClientRect();
+    var tableRect = document.getElementById("grid").getBoundingClientRect();
+    var inset = 14;
+    regionDivider.style.display = "block";
+    regionDivider.style.left = (thRect.left - cardRect.left - 1) + "px";
+    regionDivider.style.top = (tableRect.top - cardRect.top + inset) + "px";
+    regionDivider.style.height = (tableRect.height - inset * 2) + "px";
+  }
+
+  window.addEventListener("resize", positionRegionDivider);
 
   document.getElementById("addTaskForm").addEventListener("submit", function (event) {
     event.preventDefault();
