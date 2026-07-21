@@ -16,14 +16,14 @@
     --green: #34c759;
     --usa: #007aff;
     --canada: #ff3b30;
-    --c-red: #ff073a;
-    --c-orange: #f24d00;
-    --c-yellow: #cc9f00;
-    --c-green: #00b843;
-    --c-blue: #1f51ff;
-    --c-purple: #bc13fe;
-    --c-pink: #e600d8;
-    --c-teal: #00a8c4;
+    --c-red: #fe4725;
+    --c-orange: #ff593b;
+    --c-yellow: #ceff87;
+    --c-green: #04bb84;
+    --c-blue: #0894ff;
+    --c-purple: #8800ff;
+    --c-pink: #ff40b1;
+    --c-teal: #b55eff;
     --c-gray: #8e8e93;
   }
   @media (prefers-color-scheme: dark) {
@@ -38,14 +38,14 @@
       --green: #30d158;
       --usa: #0a84ff;
       --canada: #ff453a;
-      --c-red: #ff073a;
-      --c-orange: #f24d00;
-      --c-yellow: #cc9f00;
-      --c-green: #00b843;
-      --c-blue: #2b6bff;
-      --c-purple: #bc13fe;
-      --c-pink: #e600d8;
-      --c-teal: #00a8c4;
+      --c-red: #fe4725;
+      --c-orange: #ff593b;
+      --c-yellow: #ceff87;
+      --c-green: #04bb84;
+      --c-blue: #0894ff;
+      --c-purple: #8800ff;
+      --c-pink: #ff40b1;
+      --c-teal: #b55eff;
       --c-gray: #98989e;
     }
   }
@@ -563,7 +563,10 @@
     TASKS.forEach(function (task) {
     var tr = document.createElement("tr");
     tr.dataset.task = task.id;
-    tr.style.setProperty("--task-color", "var(--c-" + colorNameForTask(task) + ")");
+    var colorName = colorNameForTask(task);
+    tr.style.setProperty("--task-color", "var(--c-" + colorName + ")");
+    // Mindaro is too light for a white checkmark.
+    tr.style.setProperty("--check-mark", colorName === "yellow" ? "rgba(0,0,0,0.75)" : "#fff");
 
     var taskTd = document.createElement("td");
     taskTd.className = "task-cell";
