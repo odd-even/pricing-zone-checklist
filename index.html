@@ -846,8 +846,8 @@
       var first = ths[0].getBoundingClientRect();
       var last = ths[ths.length - 1].getBoundingClientRect();
       box.style.display = "block";
-      box.style.left = (first.left - cardRect.left + 1) + "px";
-      box.style.width = (last.right - first.left - 2) + "px";
+      box.style.left = (first.left - cardRect.left + 4) + "px";
+      box.style.width = (last.right - first.left - 8) + "px";
       box.style.top = (tableRect.top - cardRect.top + inset) + "px";
       box.style.height = (tableRect.height - inset * 2) + "px";
     });
