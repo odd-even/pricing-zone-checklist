@@ -198,11 +198,10 @@
   .zone-region { display: block; font-size: clamp(7px, 1.1vw, 9px); color: var(--text-secondary); margin-top: 4px; letter-spacing: 0.5px; }
   .zone-label.usa, .zone-label.canada { color: var(--text); }
   .card { position: relative; }
-  .region-divider {
+  .region-box {
     position: absolute;
-    width: 2px;
-    border-radius: 999px;
-    background: var(--separator);
+    border: 1.5px solid var(--separator);
+    border-radius: 14px;
     pointer-events: none;
   }
 
@@ -545,12 +544,10 @@
   taskHead.textContent = "Changes";
   zoneHeaders.appendChild(taskHead);
 
-  var prevRegion = null;
   ZONES.forEach(function (zone) {
     var th = document.createElement("th");
     th.className = "zone-head";
-    if (prevRegion && zone.region !== prevRegion) th.className += " region-start";
-    prevRegion = zone.region;
+    th.dataset.region = zone.region;
     var zoneWord = document.createElement("span");
     zoneWord.className = "zone-word";
     zoneWord.textContent = "ZONE";
@@ -826,28 +823,37 @@
     overallBar.style.backgroundSize = pct > 0 ? (10000 / pct) + "% 100%" : "100% 100%";
     overallCount.textContent = totalDone + " of " + total;
     if (typeof updateRestoreButton === "function") updateRestoreButton();
-    positionRegionDivider();
+    positionRegionBoxes();
   }
 
-  var regionDivider = document.createElement("div");
-  regionDivider.className = "region-divider";
-  document.querySelector(".card").appendChild(regionDivider);
+  var regionBoxes = {};
+  ["USA", "Canada"].forEach(function (region) {
+    var box = document.createElement("div");
+    box.className = "region-box";
+    document.querySelector(".card").appendChild(box);
+    regionBoxes[region] = box;
+  });
 
-  function positionRegionDivider() {
-    var firstCa = zoneHeaders.querySelector("th.region-start");
-    if (!firstCa) { regionDivider.style.display = "none"; return; }
+  function positionRegionBoxes() {
     var card = document.querySelector(".card");
     var cardRect = card.getBoundingClientRect();
-    var thRect = firstCa.getBoundingClientRect();
     var tableRect = document.getElementById("grid").getBoundingClientRect();
-    var inset = 14;
-    regionDivider.style.display = "block";
-    regionDivider.style.left = (thRect.left - cardRect.left - 1) + "px";
-    regionDivider.style.top = (tableRect.top - cardRect.top + inset) + "px";
-    regionDivider.style.height = (tableRect.height - inset * 2) + "px";
+    var inset = 8;
+    Object.keys(regionBoxes).forEach(function (region) {
+      var ths = zoneHeaders.querySelectorAll('th[data-region="' + region + '"]');
+      var box = regionBoxes[region];
+      if (!ths.length) { box.style.display = "none"; return; }
+      var first = ths[0].getBoundingClientRect();
+      var last = ths[ths.length - 1].getBoundingClientRect();
+      box.style.display = "block";
+      box.style.left = (first.left - cardRect.left + 1) + "px";
+      box.style.width = (last.right - first.left - 2) + "px";
+      box.style.top = (tableRect.top - cardRect.top + inset) + "px";
+      box.style.height = (tableRect.height - inset * 2) + "px";
+    });
   }
 
-  window.addEventListener("resize", positionRegionDivider);
+  window.addEventListener("resize", positionRegionBoxes);
 
   document.getElementById("addTaskForm").addEventListener("submit", function (event) {
     event.preventDefault();
